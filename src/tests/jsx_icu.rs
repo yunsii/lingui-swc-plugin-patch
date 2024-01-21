@@ -230,7 +230,7 @@ to!(
        import { Trans } from "@lingui/react";
         <Trans
         message={"{count, plural, one {{count} items} other {...}}"}
-        id={"+hE+5/"}
+        id={"+hE+5s"}
          values={{
           count: count
         }}
@@ -275,7 +275,7 @@ to!(
 
     r#"
         import { Trans } from "@lingui/react";
-        <Trans message={"{count, select, male {{variable}} third {{0}} female {She} other {<0>Other</0>}}"} id={"/7RSeH"} values={{
+        <Trans message={"{count, select, male {{variable}} third {{0}} female {She} other {<0>Other</0>}}"} id={"7RSeH2"} values={{
           count: count,
           variable: variable,
           0: foo.bar

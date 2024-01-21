@@ -1,5 +1,5 @@
 {
-  "name": "@lingui/swc-plugin",
+  "name": "lingui-swc-plugin-patch",
   "version": "4.0.4",
   "description": "A SWC Plugin for LinguiJS",
   "author": {

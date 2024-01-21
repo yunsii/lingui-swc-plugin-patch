@@ -3,12 +3,21 @@ use data_encoding::BASE64;
 
 const UNIT_SEPARATOR: &char = &'\u{001F}';
 
-pub fn generate_message_id(message: &str, context: &str) -> String {
+// Original function
+pub fn _generate_message_id(message: &str, context: &str) -> String {
   let mut hasher = Sha256::new();
   hasher.update(format!("{message}{UNIT_SEPARATOR}{context}"));
 
   let result = hasher.finalize();
   return BASE64.encode(result.as_ref())[0..6].into()
+}
+
+pub fn generate_message_id(message: &str, context: &str) -> String {
+  let mut hasher = Sha256::new();
+  hasher.update(format!("{message}{UNIT_SEPARATOR}{context}"));
+
+  let result = hasher.finalize();
+  return BASE64.encode(result.as_ref()).replace("/", "")[0..6].into()
 }
 
 #[cfg(test)]
@@ -18,7 +27,9 @@ mod tests {
   #[test]
   fn test_generate_message_id() {
     assert_eq!(
-      generate_message_id("my message", ""), "vQhkQx")
+      generate_message_id("my message", ""), "vQhkQx");
+    assert_eq!(
+      generate_message_id("啊啊啊啊啊啊啊啊啊啊", ""), "QlR2EY");
   }
 
   #[test]
