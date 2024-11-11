@@ -23,7 +23,7 @@ to!(
     r#"
     import { i18n as $_i18n } from "@lingui/core";
     const messagePlural = $_i18n._({
-        id: "V/M0Vc",
+        id: "VM0VcD",
         message: "{count, plural, one {# Book} other {# Books}}",
         values: {
             count: count
@@ -61,7 +61,7 @@ to!(
       import { i18n as $_i18n } from "@lingui/core";
 
       const messagePlural = $_i18n._({
-          id: "2y/Fr5",
+          id: "2yFr5B",
           message: "{count, plural, one {# Book} other {# Books} few {# Books}}",
           values: {
               count: count

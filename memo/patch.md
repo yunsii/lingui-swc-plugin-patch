@@ -1,0 +1,3 @@
+- cargo test
+- rustup target add wasm32-wasi
+- cargo build-wasi --release

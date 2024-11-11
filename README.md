@@ -4,8 +4,8 @@
 
 A Rust versions of [LinguiJS Macro](https://lingui.dev/ref/macro) [<img src="https://img.shields.io/badge/beta-yellow"/>](https://github.com/lingui/swc-plugin)
 
-[![npm](https://img.shields.io/npm/v/@lingui/swc-plugin?logo=npm&cacheSeconds=1800)](https://www.npmjs.com/package/@lingui/swc-plugin)
-[![npm](https://img.shields.io/npm/dt/@lingui/swc-plugin?cacheSeconds=500)](https://www.npmjs.com/package/@lingui/swc-plugin)
+[![npm](https://img.shields.io/npm/v/lingui-swc-plugin-patch?logo=npm&cacheSeconds=1800)](https://www.npmjs.com/package/lingui-swc-plugin-patch)
+[![npm](https://img.shields.io/npm/dt/lingui-swc-plugin-patch?cacheSeconds=500)](https://www.npmjs.com/package/lingui-swc-plugin-patch)
 [![CI](https://github.com/lingui/swc-plugin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/lingui/swc-plugin/actions/workflows/ci.yml)
 [![GitHub contributors](https://img.shields.io/github/contributors/lingui/swc-plugin?cacheSeconds=1000)](https://github.com/lingui/swc-plugin/graphs/contributors)
 [![GitHub](https://img.shields.io/github/license/lingui/swc-plugin)](https://github.com/lingui/swc-plugin/blob/main/LICENSE)
@@ -16,9 +16,9 @@ A Rust versions of [LinguiJS Macro](https://lingui.dev/ref/macro) [<img src="htt
 
 Install plugin:
 ```bash
-npm install --save-dev @lingui/swc-plugin
+npm install --save-dev lingui-swc-plugin-patch
 # or
-yarn add -D @lingui/swc-plugin
+yarn add -D lingui-swc-plugin-patch
 ```
 
 You still need to install `@lingui/macro` for typings support:
@@ -40,7 +40,7 @@ https://swc.rs/docs/configuration/swcrc
     "experimental": {
       "plugins": [
         [
-          "@lingui/swc-plugin",
+          "lingui-swc-plugin-patch",
           {
             // Optional
             // Unlike the JS version this option must be passed as object only.
@@ -66,7 +66,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     swcPlugins: [
-      ['@lingui/swc-plugin', {
+      ['lingui-swc-plugin-patch', {
        // the same options as in .swcrc
       }],
     ],

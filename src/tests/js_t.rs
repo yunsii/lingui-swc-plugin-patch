@@ -82,7 +82,7 @@ to!(
         }
     });
     $_i18n._({
-        id: "+NCjg/",
+        id: "+NCjg+",
         message: "Refresh {0}",
         values: {
             0: expr()
@@ -149,14 +149,14 @@ to!(
         }
     });
     custom_i18n._({
-        id: "+NCjg/",
+        id: "+NCjg+",
         message: "Refresh {0}",
         values: {
             0: expr()
         }
     });
     custom.i18n._({
-      id: "+NCjg/",
+      id: "+NCjg+",
       message: "Refresh {0}",
       values: {
           0: expr()

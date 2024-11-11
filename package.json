@@ -1,12 +1,12 @@
 {
-  "name": "@lingui/swc-plugin",
+  "name": "lingui-swc-plugin-patch",
   "version": "5.0.0-next.3",
   "description": "A SWC Plugin for LinguiJS",
   "author": {
     "name": "Timofei Iatsenko",
     "email": "timiatsenko@gmail.com"
   },
-  "repository": "lingui/swc-plugin",
+  "repository": "yunsii/lingui-swc-plugin-patch",
   "bugs": "https://github.com/lingui/swc-plugin/issues",
   "license": "MIT",
   "keywords": [

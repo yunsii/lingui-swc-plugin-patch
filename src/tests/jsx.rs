@@ -184,7 +184,7 @@ to!(
 
     r#"
      import { Trans as Trans_ } from "@lingui/react";
-     <Trans_ message={"<0>This should work  </0>"} id={"K/1Xpr"}
+     <Trans_ message={"<0>This should work  </0>"} id={"K1Xprv"}
         components={{
           0: <Text />,
         }}
