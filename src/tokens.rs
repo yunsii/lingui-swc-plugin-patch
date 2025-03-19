@@ -1,5 +1,5 @@
 use swc_core::ecma::ast::{Expr, JSXOpeningElement};
-use swc_core::ecma::atoms::JsWord;
+use swc_core::ecma::atoms::Atom;
 
 pub enum MsgToken {
     String(String),
@@ -17,16 +17,16 @@ pub struct TagOpening {
 pub struct IcuChoice {
     pub value: Box<Expr>,
     /// plural | select | selectOrdinal
-    pub format: JsWord,
+    pub format: Atom,
     pub cases: Vec<CaseOrOffset>,
 }
 
 pub enum CaseOrOffset {
     Case(ChoiceCase),
-    Offset(String)
+    Offset(String),
 }
 pub struct ChoiceCase {
-    pub key: JsWord,
+    pub key: Atom,
     pub tokens: Vec<MsgToken>,
 }
 
