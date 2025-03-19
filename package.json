@@ -1,6 +1,6 @@
 {
   "name": "lingui-swc-plugin-patch",
-  "version": "4.0.4",
+  "version": "5.5.1",
   "description": "A SWC Plugin for LinguiJS",
   "author": {
     "name": "Timofei Iatsenko",
@@ -20,17 +20,16 @@
     "i18n",
     "internalization"
   ],
-  "main": "target/wasm32-wasi/release/lingui_macro_plugin.wasm",
+  "main": "target/wasm32-wasip1/release/lingui_macro_plugin.wasm",
   "exports": {
-    ".": "./target/wasm32-wasi/release/lingui_macro_plugin.wasm"
+    ".": "./target/wasm32-wasip1/release/lingui_macro_plugin.wasm"
   },
   "scripts": {
     "prepublishOnly": "cargo build-wasi --release"
   },
   "files": [],
-  "packageManager": "yarn@3.3.1",
   "peerDependencies": {
-    "@lingui/macro": "4"
+    "@lingui/core": "5"
   },
   "peerDependenciesMeta": {
     "@swc/core": {

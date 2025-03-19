@@ -1,16 +1,10 @@
+use crate::ast_utils::expand_ts_as_expr;
+use crate::tokens::{CaseOrOffset, IcuChoice, MsgToken};
 use std::collections::HashSet;
 use swc_core::{
-    common::{DUMMY_SP},
-    ecma::{
-        ast::*,
-    },
+    common::{SyntaxContext, DUMMY_SP},
+    ecma::ast::*,
 };
-
-use crate::{
-  normalize_witespaces_js::normalize_whitespaces_js,
-  normalize_witespaces_jsx::normalize_whitespaces_jsx,
-};
-use crate::tokens::{IcuChoice, CaseOrOffset, MsgToken};
 
 fn dedup_values(mut v: Vec<ValueWithPlaceholder>) -> Vec<ValueWithPlaceholder> {
     let mut uniques = HashSet::new();
@@ -26,22 +20,20 @@ pub struct ValueWithPlaceholder {
 
 impl ValueWithPlaceholder {
     pub fn to_prop(self) -> PropOrSpread {
-        let ident = Ident::new(self.placeholder.into(), DUMMY_SP);
+        let ident = IdentName::new(self.placeholder.into(), DUMMY_SP);
 
-        PropOrSpread::Prop(Box::new(
-            Prop::KeyValue(KeyValueProp {
-                key: PropName::Ident(ident),
-                value: self.value,
-            })
-        ))
+        PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
+            key: PropName::Ident(ident),
+            value: self.value,
+        })))
     }
 }
 
 pub struct MessageBuilderResult {
-  pub message_str: String,
-  pub message: Box<Expr>,
-  pub values: Option<Box<Expr>>,
-  pub components: Option<Box<Expr>>,
+    pub message_str: String,
+    pub message: Box<Expr>,
+    pub values: Option<Box<Expr>>,
+    pub components: Option<Box<Expr>>,
 }
 
 pub struct MessageBuilder {
@@ -55,7 +47,7 @@ pub struct MessageBuilder {
 }
 
 impl MessageBuilder {
-    pub fn parse(tokens: Vec<MsgToken>, jsx: bool) -> MessageBuilderResult {
+    pub fn parse(tokens: Vec<MsgToken>) -> MessageBuilderResult {
         let mut builder = MessageBuilder {
             message: String::new(),
             components_stack: Vec::new(),
@@ -65,43 +57,50 @@ impl MessageBuilder {
         };
 
         builder.from_tokens(tokens);
-        builder.to_args(jsx)
+        builder.to_args()
     }
 
-    pub fn to_args(mut self, jsx: bool) -> MessageBuilderResult {
-      let message_str = if jsx {
-        normalize_whitespaces_jsx(&self.message)
-      } else {
-        normalize_whitespaces_js(&self.message)
-      };
+    pub fn to_args(mut self) -> MessageBuilderResult {
+        let message_str = self.message;
 
-      let message = Box::new(Expr::Lit(Lit::Str(Str {
-        span: DUMMY_SP,
-        value: message_str.clone().into(),
-        raw: None,
-      })));
+        let message = Box::new(Expr::Lit(Lit::Str(Str {
+            span: DUMMY_SP,
+            value: message_str.clone().into(),
+            raw: None,
+        })));
 
-      self.values.append(&mut self.values_indexed);
+        self.values.append(&mut self.values_indexed);
 
-      let values = if self.values.len() > 0 {
-        Some(Box::new(Expr::Object(ObjectLit {
-          span: DUMMY_SP,
-          props: dedup_values(self.values).into_iter().map(|item| item.to_prop()).collect(),
-        })))
-      } else { None };
+        let values = if self.values.len() > 0 {
+            Some(Box::new(Expr::Object(ObjectLit {
+                span: DUMMY_SP,
+                props: dedup_values(self.values)
+                    .into_iter()
+                    .map(|item| item.to_prop())
+                    .collect(),
+            })))
+        } else {
+            None
+        };
 
         let components = if self.components.len() > 0 {
             Some(Box::new(Expr::Object(ObjectLit {
                 span: DUMMY_SP,
-                props: self.components.into_iter().map(|item| item.to_prop()).collect(),
+                props: self
+                    .components
+                    .into_iter()
+                    .map(|item| item.to_prop())
+                    .collect(),
             })))
-        } else { None };
+        } else {
+            None
+        };
 
         MessageBuilderResult {
-          message_str: message_str.to_string(),
-          message,
-          values,
-          components,
+            message_str: message_str.to_string(),
+            message,
+            values,
+            components,
         }
     }
 
@@ -146,14 +145,12 @@ impl MessageBuilder {
         // todo: it looks very dirty and bad to cloning this jsx values
         self.components.push(ValueWithPlaceholder {
             placeholder: self.components.len().to_string(),
-            value: Box::new(Expr::JSXElement(
-                Box::new(JSXElement {
-                    opening: el,
-                    closing: None,
-                    children: vec![],
-                    span: DUMMY_SP,
-                })
-            )),
+            value: Box::new(Expr::JSXElement(Box::new(JSXElement {
+                opening: el,
+                closing: None,
+                children: vec![],
+                span: DUMMY_SP,
+            }))),
         });
     }
 
@@ -165,7 +162,9 @@ impl MessageBuilder {
         }
     }
 
-    fn push_exp(&mut self, exp: Box<Expr>) -> String {
+    fn push_exp(&mut self, mut exp: Box<Expr>) -> String {
+        exp = expand_ts_as_expr(exp);
+
         match exp.as_ref() {
             Expr::Ident(ident) => {
                 self.values.push(ValueWithPlaceholder {
@@ -173,7 +172,46 @@ impl MessageBuilder {
                     value: exp.clone(),
                 });
 
-                return ident.sym.to_string();
+                ident.sym.to_string()
+            }
+            Expr::Object(object) => {
+                if let Some(PropOrSpread::Prop(prop)) = object.props.first() {
+                    // {foo}
+                    if let Some(short) = prop.as_shorthand() {
+                        self.values_indexed.push(ValueWithPlaceholder {
+                            placeholder: short.sym.to_string(),
+                            value: Box::new(Expr::Ident(Ident {
+                                span: DUMMY_SP,
+                                sym: short.sym.clone(),
+                                ctxt: SyntaxContext::empty(),
+                                optional: false,
+                            })),
+                        });
+
+                        return short.sym.to_string();
+                    }
+                    // {foo: bar}
+                    if let Prop::KeyValue(kv) = prop.as_ref() {
+                        if let PropName::Ident(ident) = &kv.key {
+                            self.values_indexed.push(ValueWithPlaceholder {
+                                placeholder: ident.sym.to_string(),
+                                value: kv.value.clone(),
+                            });
+
+                            return ident.sym.to_string();
+                        }
+                    }
+                }
+
+                // fallback for {...spread} or {}
+                let index = self.values_indexed.len().to_string();
+
+                self.values_indexed.push(ValueWithPlaceholder {
+                    placeholder: index.clone(),
+                    value: exp.clone(),
+                });
+
+                index
             }
             _ => {
                 let index = self.values_indexed.len().to_string();
@@ -183,7 +221,7 @@ impl MessageBuilder {
                     value: exp.clone(),
                 });
 
-                return index;
+                index
             }
         }
     }
@@ -207,7 +245,6 @@ impl MessageBuilder {
                     self.push_msg("}");
                 }
             }
-
         }
 
         self.push_msg("}");
