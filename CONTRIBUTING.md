@@ -20,6 +20,23 @@ cargo test js_choices_may_contain_expressions
 cargo test jsx_
 ```
 
+## Code Quality Checks
+
+Before submitting a pull request, please ensure your code passes all quality checks. The CI system will run these same checks, so running them locally will save you time.
+
+### Formatting
+```bash
+# this project uses rustfmt to enforce a consistent code style
+cargo fmt
+```
+
+### Linting
+```bash
+# we use clippy to catch common mistakes and improve code quality
+# all clippy warnings are treated as errors in the CI
+cargo clippy --all-targets --all-features -- -D warnings
+```
+
 ## Building for production
 
 ```bash
@@ -49,4 +66,19 @@ It's important to build a plugin with the same Rust version used to build SWC it
 
 This project uses `rust-toolchain` file in the root of project to define rust version.
 
-To update Rust, put new version into `rust-toolchain` and call `rustup update` command
+To update Rust, put new version into `rust-toolchain` and call `rustup update` command.
+
+## Code Coverage
+
+This project uses [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov) to generate code coverage reports.
+
+### Installing cargo-llvm-cov
+```bash
+cargo install cargo-llvm-cov
+```
+
+### Running coverage locally
+```bash
+# Generate HTML coverage report for local viewing
+cargo llvm-cov --all-features --workspace --html --open
+```

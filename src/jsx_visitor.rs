@@ -36,11 +36,13 @@ static TRIM_END: Lazy<Regex> = Lazy::new(|| Regex::new(r"[ ]+$").unwrap());
 
 // taken from babel repo -> packages/babel-types/src/utils/react/cleanJSXElementLiteralChild.ts
 fn clean_jsx_element_literal_child(value: &str) -> String {
-    let lines: Vec<&str> = value.split('\n').collect();
+    let lines: Vec<&str> = Regex::new(r"\r\n|\n|\r").unwrap().split(value).collect();
     let mut last_non_empty_line = 0;
 
+    let re_non_space = Regex::new(r"[^\t ]").unwrap();
+
     for (i, line) in lines.iter().enumerate() {
-        if line.trim().len() > 0 {
+        if re_non_space.is_match(line) {
             last_non_empty_line = i;
         }
     }
@@ -88,7 +90,7 @@ fn is_allowed_plural_option(key: &str) -> Option<Atom> {
     None
 }
 
-impl<'a> TransJSXVisitor<'a> {
+impl TransJSXVisitor<'_> {
     // <Plural /> <Select /> <SelectOrdinal />
     fn visit_icu_macro(&mut self, el: &JSXOpeningElement, icu_format: &str) -> Vec<CaseOrOffset> {
         let mut choices: Vec<CaseOrOffset> = Vec::new();
@@ -127,7 +129,7 @@ impl<'a> TransJSXVisitor<'a> {
                                         }
                                         // some={`<Books />`}
                                         Expr::JSXElement(exp) => {
-                                            let mut visitor = TransJSXVisitor::new(&self.ctx);
+                                            let mut visitor = TransJSXVisitor::new(self.ctx);
                                             exp.visit_children_with(&mut visitor);
 
                                             tokens.extend(visitor.tokens)
@@ -155,20 +157,20 @@ impl<'a> TransJSXVisitor<'a> {
             }
         }
 
-        return choices;
+        choices
     }
 }
 
-impl<'a> Visit for TransJSXVisitor<'a> {
+impl Visit for TransJSXVisitor<'_> {
     fn visit_jsx_opening_element(&mut self, el: &JSXOpeningElement) {
         if let JSXElementName::Ident(ident) = &el.name {
-            if self.ctx.is_lingui_ident("Trans", &ident) {
+            if self.ctx.is_lingui_ident("Trans", ident) {
                 el.visit_children_with(self);
                 return;
             }
 
-            if self.ctx.is_lingui_jsx_choice_cmp(&ident) {
-                let value = match get_jsx_attr(&el, "value").and_then(|attr| attr.value.as_ref()) {
+            if self.ctx.is_lingui_jsx_choice_cmp(ident) {
+                let value = match get_jsx_attr(el, "value").and_then(|attr| attr.value.as_ref()) {
                     Some(JSXAttrValue::JSXExprContainer(JSXExprContainer {
                         expr: JSXExpr::Expr(exp),
                         ..
@@ -211,9 +213,7 @@ impl<'a> Visit for TransJSXVisitor<'a> {
 
     fn visit_jsx_text(&mut self, el: &JSXText) {
         self.tokens
-            .push(MsgToken::String(clean_jsx_element_literal_child(
-                &el.value.to_string(),
-            )));
+            .push(MsgToken::String(clean_jsx_element_literal_child(&el.value)));
     }
 
     fn visit_jsx_expr_container(&mut self, cont: &JSXExprContainer) {

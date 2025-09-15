@@ -7,6 +7,7 @@ A Rust versions of [LinguiJS Macro](https://lingui.dev/ref/macro) [<img src="htt
 [![npm](https://img.shields.io/npm/v/lingui-swc-plugin-patch?logo=npm&cacheSeconds=1800)](https://www.npmjs.com/package/lingui-swc-plugin-patch)
 [![npm](https://img.shields.io/npm/dt/lingui-swc-plugin-patch?cacheSeconds=500)](https://www.npmjs.com/package/lingui-swc-plugin-patch)
 [![CI](https://github.com/lingui/swc-plugin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/lingui/swc-plugin/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/lingui/swc-plugin/branch/main/graph/badge.svg)](https://codecov.io/gh/lingui/swc-plugin)
 [![GitHub contributors](https://img.shields.io/github/contributors/lingui/swc-plugin?cacheSeconds=1000)](https://github.com/lingui/swc-plugin/graphs/contributors)
 [![GitHub](https://img.shields.io/github/license/lingui/swc-plugin)](https://github.com/lingui/swc-plugin/blob/main/LICENSE)
 
@@ -106,7 +107,8 @@ Below is a table referencing the swc_core version used during the plugin build, 
 | `4.1.0`, `5.0.0` ~ `5.2.0`                        | [`0.106.3`](https://plugins.swc.rs/versions/range/95) |
 | `5.3.0`                                           | [`5.0.4`](https://plugins.swc.rs/versions/range/116)  |
 | `5.4.0`                                           | [`14.1.0`](https://plugins.swc.rs/versions/range/138) |
-| `5.5.0`                                           | [`15.0.1`](https://plugins.swc.rs/versions/range/271) |
+| `5.5.0` ~ `5.5.2`                                 | [`15.0.1`](https://plugins.swc.rs/versions/range/271) |
+| `5.6.0` ~ `5.6.1`                                 | [`27.0.6`](https://plugins.swc.rs/versions/range/364) |
 
 
 > **Note**
