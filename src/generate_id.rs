@@ -9,7 +9,7 @@ pub fn _generate_message_id(message: &str, context: &str) -> String {
     hasher.update(format!("{message}{UNIT_SEPARATOR}{context}"));
 
     let result = hasher.finalize();
-    return BASE64.encode(result.as_ref())[0..6].into();
+    BASE64.encode(result.as_ref())[0..6].into()
 }
 
 pub fn generate_message_id(message: &str, context: &str) -> String {
@@ -17,7 +17,7 @@ pub fn generate_message_id(message: &str, context: &str) -> String {
     hasher.update(format!("{message}{UNIT_SEPARATOR}{context}"));
 
     let result = hasher.finalize();
-    return BASE64.encode(result.as_ref()).replace("/", "")[0..6].into();
+    BASE64.encode(result.as_ref()).replace("/", "")[0..6].into()
 }
 
 #[cfg(test)]
